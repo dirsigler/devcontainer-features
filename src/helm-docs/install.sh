@@ -15,33 +15,75 @@ echo "The effective dev container remoteUser's home directory is '$_REMOTE_USER_
 echo "The effective dev container containerUser is '$_CONTAINER_USER'"
 echo "The effective dev container containerUser's home directory is '$_CONTAINER_USER_HOME'"
 
-export DEBIAN_FRONTEND=noninteractive
+# Update and install necessary tools
+if command -v apt-get &> /dev/null; then
+    apt-get update && apt-get install -y \
+        curl \
+        wget \
+        git \
+        ca-certificates \
+        openssl
+elif command -v yum &> /dev/null; then
+    yum install -y \
+        curl \
+        wget \
+        git \
+        ca-certificates \
+        openssl
+else
+    echo "Neither apt-get nor yum found. Exiting."
+    exit 1
+fi
 
-apt-get update && apt-get install -y \
-    curl \
-    wget \
-    git \
-    ca-certificates \
-    openssl
+# Detect the system architecture
+ARCH=$(uname -m)
 
-# Download the latest x86_64.deb package from GitHub
+# Map the architecture to the GitHub asset name
+case "$ARCH" in
+    x86_64)
+        ARCH_SUFFIX="x86_64"
+        ;;
+    aarch64)
+        ARCH_SUFFIX="arm64"
+        ;;
+    *)
+        echo "Unsupported architecture: $ARCH"
+        exit 1
+        ;;
+esac
+
+# Detect the package manager and set the package extension
+if command -v dpkg &> /dev/null; then
+    PACKAGE_MANAGER="dpkg"
+    PACKAGE_EXT="deb"
+elif command -v rpm &> /dev/null; then
+    PACKAGE_MANAGER="rpm"
+    PACKAGE_EXT="rpm"
+else
+    echo "Neither dpkg nor rpm found. Exiting."
+    exit 1
+fi
+
+# Download the latest package for the detected architecture from GitHub
 curl -s https://api.github.com/repos/norwoodj/helm-docs/releases/latest \
-    | grep "browser_download_url.*x86_64.deb" \
+    | grep "browser_download_url.*${ARCH_SUFFIX}.${PACKAGE_EXT}" \
     | cut -d : -f 2,3 \
     | tr -d \" \
     | wget -qi -
 
-# Find the downloaded .deb file
-deb_file=$(ls | grep "helm-docs.*x86_64.deb")
+# Find the downloaded package file
+package_file=$(ls | grep "helm-docs.*${ARCH_SUFFIX}.${PACKAGE_EXT}")
 
-# Install the .deb package
-if [ -n "$deb_file" ]; then
-    dpkg -i "$deb_file"
-    # Resolve dependencies if needed
-    apt-get install -f
+# Install the package
+if [ -n "$package_file" ]; then
+    if [ "$PACKAGE_MANAGER" == "dpkg" ]; then
+        dpkg -i "$package_file"
+        # Resolve dependencies if needed
+        apt-get install -f
+    elif [ "$PACKAGE_MANAGER" == "rpm" ]; then
+        rpm -ivh "$package_file"
+    fi
 else
-    echo "Failed to find the downloaded .deb file."
+    echo "Failed to find the downloaded package file."
     exit 1
 fi
-
-rm -rf /var/lib/apt/lists/*

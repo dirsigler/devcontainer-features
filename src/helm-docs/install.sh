@@ -16,28 +16,28 @@ echo "The effective dev container containerUser is '$_CONTAINER_USER'"
 echo "The effective dev container containerUser's home directory is '$_CONTAINER_USER_HOME'"
 
 apt-get update && apt-get install -y \
-    curl \
-    wget \
-    git
+    golang
 
-# Download the latest x86_64.deb package from GitHub
-curl -s https://api.github.com/repos/norwoodj/helm-docs/releases/latest \
-    | grep "browser_download_url.*x86_64.deb" \
-    | cut -d : -f 2,3 \
-    | tr -d \" \
-    | wget -qi -
+go install github.com/norwoodj/helm-docs/cmd/helm-docs@latest
 
-# Find the downloaded .deb file
-deb_file=$(ls | grep "helm-docs.*x86_64.deb")
+# # Download the latest x86_64.deb package from GitHub
+# curl -s https://api.github.com/repos/norwoodj/helm-docs/releases/latest \
+#     | grep "browser_download_url.*x86_64.deb" \
+#     | cut -d : -f 2,3 \
+#     | tr -d \" \
+#     | wget -qi -
 
-# Install the .deb package
-if [ -n "$deb_file" ]; then
-    dpkg -i "$deb_file"
-    # Resolve dependencies if needed
-    apt-get install -f
-else
-    echo "Failed to find the downloaded .deb file."
-    exit 1
-fi
+# # Find the downloaded .deb file
+# deb_file=$(ls | grep "helm-docs.*x86_64.deb")
+
+# # Install the .deb package
+# if [ -n "$deb_file" ]; then
+#     dpkg -i "$deb_file"
+#     # Resolve dependencies if needed
+#     apt-get install -f
+# else
+#     echo "Failed to find the downloaded .deb file."
+#     exit 1
+# fi
 
 rm -rf /var/lib/apt/lists/*

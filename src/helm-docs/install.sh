@@ -32,9 +32,9 @@ deb_file=$(ls | grep "helm-docs.*x86_64.deb")
 
 # Install the .deb package
 if [ -n "$deb_file" ]; then
-    sudo dpkg -i "$deb_file"
+    dpkg -i "$deb_file"
     # Resolve dependencies if needed
-    sudo apt-get install -f
+    apt-get install -f
 else
     echo "Failed to find the downloaded .deb file."
     exit 1

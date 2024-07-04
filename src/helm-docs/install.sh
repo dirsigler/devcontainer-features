@@ -16,7 +16,9 @@ echo "The effective dev container containerUser is '$_CONTAINER_USER'"
 echo "The effective dev container containerUser's home directory is '$_CONTAINER_USER_HOME'"
 
 apt-get update && apt-get install -y \
-    golang
+    golang \
+    ca-certificates \
+    openssl
 
 go install github.com/norwoodj/helm-docs/cmd/helm-docs@latest
 

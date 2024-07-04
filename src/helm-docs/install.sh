@@ -15,12 +15,17 @@ echo "The effective dev container remoteUser's home directory is '$_REMOTE_USER_
 echo "The effective dev container containerUser is '$_CONTAINER_USER'"
 echo "The effective dev container containerUser's home directory is '$_CONTAINER_USER_HOME'"
 
+apt-get update && apt-get install -y \
+    curl \
+    wget \
+    git
+
 # Download the latest x86_64.deb package from GitHub
 curl -s https://api.github.com/repos/norwoodj/helm-docs/releases/latest \
-| grep "browser_download_url.*x86_64.deb" \
-| cut -d : -f 2,3 \
-| tr -d \" \
-| wget -qi -
+    | grep "browser_download_url.*x86_64.deb" \
+    | cut -d : -f 2,3 \
+    | tr -d \" \
+    | wget -qi -
 
 # Find the downloaded .deb file
 deb_file=$(ls | grep "helm-docs.*x86_64.deb")

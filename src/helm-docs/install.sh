@@ -15,21 +15,17 @@ echo "The effective dev container remoteUser's home directory is '$_REMOTE_USER_
 echo "The effective dev container containerUser is '$_CONTAINER_USER'"
 echo "The effective dev container containerUser's home directory is '$_CONTAINER_USER_HOME'"
 
+ DEBIAN_FRONTEND=noninteractive
+
 # Update and install necessary tools
 if command -v apt-get &> /dev/null; then
     apt-get update && apt-get install -y \
         curl \
-        wget \
-        git \
-        ca-certificates \
-        openssl
+        wget
 elif command -v yum &> /dev/null; then
     yum install -y \
         curl \
-        wget \
-        git \
-        ca-certificates \
-        openssl
+        wget
 else
     echo "Neither apt-get nor yum found. Exiting."
     exit 1

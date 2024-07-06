@@ -4,6 +4,7 @@ set -e
 
 source dev-container-features-test-lib
 
-check "helm-docs on bash" helm-docs --version
+check "helm-docs exists" which helm-docs
+check "helm-docs version" helm-docs --version
 
 reportResults

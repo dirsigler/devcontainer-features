@@ -1,5 +1,5 @@
 
-# Helm Docs (helm-docs)
+# helm-docs (helm-docs)
 
 A feature to install helm-docs
 

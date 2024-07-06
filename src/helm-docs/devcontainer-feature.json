@@ -1,7 +1,7 @@
 {
   "name": "helm-docs",
   "id": "helm-docs",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A feature to install helm-docs",
   "options": {},
   "installsAfter": ["ghcr.io/devcontainers/features/common-utils"]
